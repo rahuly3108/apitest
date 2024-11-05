@@ -110,4 +110,4 @@ def summary():
     return jsonify(summary_with_count.to_dict(orient='records'))
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False, port=5047)
+    app.run(debug=True, use_reloader=False)
