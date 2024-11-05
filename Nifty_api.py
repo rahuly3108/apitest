@@ -12,18 +12,8 @@ app = Flask(__name__)
 
 def process_data():
     # Load and process data
-    #data = pd.read_csv('ind_nifty200list.csv')
-    symbols_list = ["ABB",
-        "ACC",
-        "APLAPOLLO",
-        "AUBANK",
-        "ADANIENSOL",
-        "ADANIENT",
-        "ADANIGREEN",
-        "ADANIPORTS",
-        "ADANIPOWER",
-        "ATGL"
-    ]
+    data = pd.read_csv('ind_nifty200list.csv')
+    symbols_list = data['Symbol'].head(20)
 
     # Calculate the start date as one year ago from today
     end_date = datetime.now()
@@ -87,13 +77,13 @@ def home():
 @app.route("/correlation")
 def correlation():
     result_df = process_data()
-    correlation_df = result_df[['Stock', 'Correlation with Nifty50']]
+    correlation_df = result_df[['Stock', 'Correlation with Nifty50']].round(2)
     return jsonify(correlation_df.to_dict(orient='records'))
 
 @app.route("/regression")
 def regression():
     result_df = process_data()
-    reg_coeff_df = result_df[['Stock', 'Regression Coefficient with Nifty50']]
+    reg_coeff_df = result_df[['Stock', 'Regression Coefficient with Nifty50']].round(2)
     return jsonify(reg_coeff_df.to_dict(orient='records'))
 
 @app.route("/summary")
