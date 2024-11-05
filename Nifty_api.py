@@ -71,7 +71,7 @@ def process_data():
 
 @app.route("/")
 def home():
-    print('hello world')
+    return "Hello, world!"
     
     
 @app.route("/correlation")
@@ -110,4 +110,4 @@ def summary():
     return jsonify(summary_with_count.to_dict(orient='records'))
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False, port=5045)
+    app.run(debug=True, use_reloader=False, port=5047)
