@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 from flask import Flask, jsonify
 import pandas as pd
 import yfinance as yf
@@ -75,6 +69,11 @@ def process_data():
 
     return result_df
 
+@app.route("/")
+def home():
+    print('hello world')
+    
+    
 @app.route("/correlation")
 def correlation():
     result_df = process_data()
@@ -111,5 +110,4 @@ def summary():
     return jsonify(summary_with_count.to_dict(orient='records'))
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False, port=5046)
-
+    app.run(debug=True, use_reloader=False, port=5045)
