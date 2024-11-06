@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 import warnings
+
 warnings.filterwarnings('ignore', category=FutureWarning)
 warnings.filterwarnings('ignore', category=UserWarning)
 
@@ -67,31 +68,8 @@ def process_data():
     result_df.columns = ['Stock', 'Correlation with Nifty50', 'Variance Ratio (V1/V2)', 'Regression Coefficient with Nifty50', 'Percentage Agreement with Nifty50']
     result_df = result_df.dropna()
 
-    return result_df
-
-@app.route("/")
-def home():
-    return "Hello, world!"
-    
-    
-@app.route("/correlation")
-def correlation():
-    result_df = process_data()
-    correlation_df = result_df[['Stock', 'Correlation with Nifty50']].round(2)
-    return jsonify(correlation_df.to_dict(orient='records'))
-
-@app.route("/regression")
-def regression():
-    result_df = process_data()
-    reg_coeff_df = result_df[['Stock', 'Regression Coefficient with Nifty50']].round(2)
-    return jsonify(reg_coeff_df.to_dict(orient='records'))
-
-@app.route("/summary")
-def summary():
-    result_df = process_data()
+    # Standardize the data for clustering
     clustering_data = result_df[['Correlation with Nifty50', 'Variance Ratio (V1/V2)', 'Regression Coefficient with Nifty50', 'Percentage Agreement with Nifty50']]
-    
-    # Standardize the data
     scaler = StandardScaler()
     scaled_data = scaler.fit_transform(clustering_data)
 
@@ -102,12 +80,15 @@ def summary():
     cluster_labels = kmeans.labels_
     result_df['Cluster'] = cluster_labels + 1
 
-    # Create summary with counts
-    cluster_summary = result_df.groupby('Cluster')[['Correlation with Nifty50', 'Variance Ratio (V1/V2)', 'Regression Coefficient with Nifty50', 'Percentage Agreement with Nifty50']].mean().round(3)
-    cluster_counts = result_df.groupby('Cluster').size()
-    summary_with_count = cluster_summary.assign(Count=cluster_counts).reset_index()
+    return result_df
 
-    return jsonify(summary_with_count.to_dict(orient='records'))
+@app.route("/")
+def home():
+    # Process the data and return the result as a JSON response
+    result_df = process_data()
+
+    # Convert the result_df to a dictionary and send it as JSON
+    return jsonify(result_df.to_dict(orient='records'))
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=False)
