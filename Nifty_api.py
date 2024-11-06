@@ -14,6 +14,9 @@ app = Flask(__name__)
 def process_data():
     all_stocks_df = pd.read_csv('Stock_data.csv')
 
+    # Select the first 10 columns and the last column
+    all_stocks_df = all_stocks_df.iloc[:, :10].join(all_stocks_df.iloc[:, -1])
+
     # Calculate returns
     returns_df = all_stocks_df.copy()
     returns_df.set_index('Date', inplace=True)
@@ -33,7 +36,12 @@ def process_data():
 
     movement_df = returns_df.applymap(lambda x: 1 if x >= 0 else -1)
     nifty_movement = movement_df['Nifty50']
-    agr_df = (movement_df[symbols_list] == nifty_movement.values[:, None])
+
+    # Ensure that only symbols in the columns are used
+    symbols_list = [col for col in movement_df.columns if col != 'Nifty50']  # Remove Nifty50 if it's present in symbols_list
+    valid_symbols = [symbol for symbol in symbols_list if symbol in movement_df.columns]
+
+    agr_df = (movement_df[valid_symbols] == nifty_movement.values[:, None])
     PctAgrmt = agr_df.mean() * 100
     pangan_n50 = pd.DataFrame({'Stock': PctAgrmt.index, 'Percentage Agreement with Nifty50': PctAgrmt.values})
 
@@ -56,6 +64,7 @@ def process_data():
     result_df['Cluster'] = cluster_labels + 1
 
     return result_df
+
 
 @app.route("/")
 def home():
