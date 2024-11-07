@@ -15,7 +15,7 @@ def process_data():
     all_stocks_df = pd.read_csv('Stock_data.csv')
 
     # Select the first 10 columns and the last column
-    all_stocks_df = all_stocks_df.iloc[:, :10].join(all_stocks_df.iloc[:, -1])
+    # all_stocks_df = all_stocks_df.iloc[:, :10].join(all_stocks_df.iloc[:, -1])
 
     # Calculate returns
     returns_df = all_stocks_df.copy()
