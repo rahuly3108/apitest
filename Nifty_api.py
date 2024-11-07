@@ -12,12 +12,32 @@ warnings.filterwarnings('ignore', category=UserWarning)
 app = Flask(__name__)
 
 def process_data():
-    all_stocks_df = pd.read_csv('Stock_data.csv')
+    # Load and process data
+    data = pd.read_csv('ind_nifty200list.csv')
+    symbols_list = data['Symbol']
 
-    # Select the first 10 columns and the last column
-    # all_stocks_df = all_stocks_df.iloc[:, :10].join(all_stocks_df.iloc[:, -1])
+    # Calculate the start date as one year ago from today
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=365)
+    all_stocks_df = pd.DataFrame()
 
-    # Calculate returns
+    # Loop through each stock symbol and download the adjusted close prices
+    for symbol in symbols_list:
+        stock_df = yf.download(symbol + '.NS', start=start_date.strftime('%Y-%m-%d'), end=end_date.strftime('%Y-%m-%d'), progress=False)['Adj Close'].reset_index()
+        stock_df.columns = ['Date', symbol]
+        stock_df['Date'] = stock_df['Date'].dt.date
+        if all_stocks_df.empty:
+            all_stocks_df = stock_df 
+        else:
+            all_stocks_df = pd.merge(all_stocks_df, stock_df, on='Date', how='outer')
+
+    # Download Nifty 50 data
+    nifty50_df = yf.download('^NSEI', start=start_date.strftime('%Y-%m-%d'), end=end_date.strftime('%Y-%m-%d'), progress=False)['Adj Close'].reset_index()
+    nifty50_df.columns = ['Date', 'Nifty50']
+    nifty50_df['Date'] = nifty50_df['Date'].dt.date
+
+    # Merge Nifty 50 data with all stocks DataFrame
+    all_stocks_df = pd.merge(all_stocks_df, nifty50_df, on='Date', how='outer')
     returns_df = all_stocks_df.copy()
     returns_df.set_index('Date', inplace=True)
     returns_df = returns_df.pct_change() * 100
