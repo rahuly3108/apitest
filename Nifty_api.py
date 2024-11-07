@@ -38,6 +38,9 @@ def process_data():
 
     # Merge Nifty 50 data with all stocks DataFrame
     all_stocks_df = pd.merge(all_stocks_df, nifty50_df, on='Date', how='outer')
+    all_stocks_df = all_stocks_df.head(10).iloc[:, :9].join(nifty50_df[['Date', 'Nifty50']].head(10).set_index('Date'), on='Date')
+
+    
     returns_df = all_stocks_df.copy()
     returns_df.set_index('Date', inplace=True)
     returns_df = returns_df.pct_change() * 100
