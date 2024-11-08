@@ -14,11 +14,11 @@ app = Flask(__name__)
 def process_data():
     # Load and process data
     data = pd.read_csv('ind_nifty200list.csv')
-    symbols_list = data['Symbol']
+    symbols_list = data['Symbol'].head(10)
 
     # Calculate the start date as one year ago from today
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=365)
+    start_date = end_date - timedelta(days=90)
     all_stocks_df = pd.DataFrame()
 
     # Loop through each stock symbol and download the adjusted close prices
@@ -38,7 +38,7 @@ def process_data():
 
     # Merge Nifty 50 data with all stocks DataFrame
     all_stocks_df = pd.merge(all_stocks_df, nifty50_df, on='Date', how='outer')
-    all_stocks_df = all_stocks_df.head(10).iloc[:, :9].join(nifty50_df[['Date', 'Nifty50']].head(10).set_index('Date'), on='Date')
+    #all_stocks_df = all_stocks_df.head(10).iloc[:, :9].join(nifty50_df[['Date', 'Nifty50']].head(10).set_index('Date'), on='Date')
 
     
     returns_df = all_stocks_df.copy()
