@@ -12,7 +12,8 @@ warnings.filterwarnings('ignore', category=UserWarning)
 app = Flask(__name__)
 
 def process_data():
-    all_stocks_df = pd.read_csv('Stock_data.csv')
+    url = 'https://raw.githubusercontent.com/rahuly3108/200Stock_Nifty_50_correlation/main/Stock_data.csv'
+    all_stocks_df = pd.read_csv(url)
 
     # Select the first 10 columns and the last column
     #all_stocks_df = all_stocks_df.iloc[:, :10].join(all_stocks_df.iloc[:, -1])
