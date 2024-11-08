@@ -14,7 +14,7 @@ app = Flask(__name__)
 def process_data():
     # Load and process data
     data = pd.read_csv('ind_nifty200list.csv')
-    symbols_list = data['Symbol'].head(50)
+    symbols_list = data['Symbol'].head(100)
 
     # Calculate the start date as one year ago from today
     end_date = datetime.now()
